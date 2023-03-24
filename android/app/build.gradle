@@ -95,7 +95,7 @@ android {
 
     namespace "com.localrecipesgps"
     defaultConfig {
-        applicationId "com.localrecipesgps"
+        applicationId "com.guaire.globalrecipestraditions"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

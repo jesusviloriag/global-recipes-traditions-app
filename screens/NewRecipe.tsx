@@ -23,7 +23,7 @@ import {
 
 import { useEffect, useState } from 'react';
 import GetLocation from 'react-native-get-location'
-import TextRecognition from 'react-native-text-recognition';
+import TextRecognition from '@react-native-ml-kit/text-recognition';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import GlobalRecipes from '../components/GlobalRecipes';
@@ -45,6 +45,11 @@ function NewRecipe({ navigation }): JSX.Element {
     .then(location => {
         //console.log(location);
         setCoordinates("[" + location.latitude + "," + location.longitude + "}")
+        GlobalRecipes.instance.getNearestCities(location.latitude, location.longitude).then((response) => {
+          console.log("City: ", response.data[0].name);
+          console.log("Amount of Cities: ", response.data.length);
+          setCoordinates(response.data[0].name)
+        })
     })
     .catch(error => {
         const { code, message } = error;
@@ -66,6 +71,20 @@ function NewRecipe({ navigation }): JSX.Element {
 
   }, [navigation]);
 
+  const save = () => {
+    GlobalRecipes.instance.saveRecipe({
+      title: title,
+      image: image,
+      text: text,
+      city: coordinates
+    });
+    navigation.pop();
+  }
+
+  const cancel = () => {
+    navigation.pop();
+  }
+
   const selectRecipeText = () => {
     let options = {
       mediaType: 'photo',
@@ -74,7 +93,8 @@ function NewRecipe({ navigation }): JSX.Element {
     launchImageLibrary(options).then((result) => {
       console.log(result.assets[0].uri);
       TextRecognition.recognize(result.assets[0].uri).then((textResult) => {
-        alert(textResult);
+        console.log(textResult);
+        setText(textResult.text)
       })
     })
   }
@@ -82,6 +102,7 @@ function NewRecipe({ navigation }): JSX.Element {
   return (
     <SafeAreaView>
       <ScrollView style={styles.mainContainer}>
+        <Text style={styles.label}>Recipe Name</Text>
         <TextInput
           editable
           onChangeText={text => setTitle(text)}
@@ -90,6 +111,7 @@ function NewRecipe({ navigation }): JSX.Element {
           style={styles.textField}
         />
 
+        <Text style={[styles.label, {marginBottom: -10}]}>Image</Text>
         <View>
           <Image style={styles.image} source={image ? { uri: 'data:image/png;base64,' + image } : require('../assets/placeholder.png')}></Image>
           <TouchableOpacity 
@@ -108,6 +130,7 @@ function NewRecipe({ navigation }): JSX.Element {
             }}><Image source={require('../assets/camera/cameraFlipIcon.png')}></Image></TouchableOpacity>
         </View>
         
+        <Text style={styles.label}>Ingredients and Preparation</Text>
         <View>
           <TextInput
             editable
@@ -133,7 +156,7 @@ function NewRecipe({ navigation }): JSX.Element {
               justifyContent: 'center'
             }}><Image source={require('../assets/camera/cameraFlipIcon.png')}></Image></TouchableOpacity>
         </View>
-        
+        <Text style={styles.label}>City</Text>
         <TextInput
           editable={false}
           onChangeText={text => setCoordinates(text)}
@@ -143,11 +166,26 @@ function NewRecipe({ navigation }): JSX.Element {
         />
         <View style={{height: 500}}></View>     
       </ScrollView>
+      <View style={{position: 'absolute', bottom: 100, width: Dimensions.get("window").width, flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
+        <TouchableOpacity onPress={() => cancel()} style={styles.button}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => save()} style={[styles.button,{marginLeft: 15}]}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity> 
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  label: {
+    color: 'black',
+    marginLeft: 15,
+    marginTop: 15,
+    fontWeight: 'bold',
+    fontSize: 18
+  },
   image: {
     marginTop: 15,
     backgroundColor: 'white',
@@ -165,7 +203,6 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#275a8a',
     padding: 10,
-    marginTop: 25,
     borderRadius: 10,
     width: 75,
     alignContent: 'center',
@@ -174,7 +211,7 @@ const styles = StyleSheet.create({
   },
   textField: {
     padding: 10,
-    marginTop: 15,
+    marginTop: 5,
     marginHorizontal: 15,
     flex: 1,
     backgroundColor: 'white',

@@ -27,15 +27,17 @@ import { useEffect, useState } from 'react';
 import GlobalRecipes from '../components/GlobalRecipes';
 import Recipe from '../components/Recipe';
 
-function Home({ navigation }): JSX.Element {
+function Profile({ navigation }): JSX.Element {
 
   const [recipes, setRecipes] = React.useState('');
+  const [user, setUser] = React.useState('');
 
   useEffect(() => {
     GlobalRecipes.init();
     GlobalRecipes.instance.getAllRecipes().then((allRecipes) => {
       setRecipes(allRecipes);
     });
+    setUser(GlobalRecipes.instance.user)
   }, []);
 
   const createNewRecipe = () => {
@@ -49,7 +51,7 @@ function Home({ navigation }): JSX.Element {
       GlobalRecipes.instance.getAllRecipes().then((allRecipes) => {
         setRecipes(allRecipes);
       });
-
+      setUser(GlobalRecipes.instance.user)
     });
 
     return focusHandler;
@@ -58,6 +60,12 @@ function Home({ navigation }): JSX.Element {
 
   return (
     <SafeAreaView>
+      <View style={{flexDirection: 'row', padding: 15}}>
+        <Image style={{height: 100, width: 100, resizeMode: 'contain', borderRadius: 50}} source={ user.avatar ? { uri: 'data:image/png;base64,' + user.avatar } :require('../assets/user.png')}></Image>
+        <View style={{flex: 1, alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 25}}>{user?.username}</Text>
+        </View>
+      </View>
       <FlatList
         style={styles.mainContainer}
         data={recipes}
@@ -133,4 +141,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Profile;
