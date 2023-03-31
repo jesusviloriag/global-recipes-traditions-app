@@ -41,8 +41,8 @@ function Login({ navigation }): JSX.Element {
 
   const login = () => {
     if(username && password) {
-      GlobalRecipes.instance.login(username, password).then((response) => {
-        if(response === true) {
+      GlobalRecipes.login(username, password).then((response) => {
+        if(response) {
           navigation.navigate("Home")
         } else {
           alert("Login failed please check login information")

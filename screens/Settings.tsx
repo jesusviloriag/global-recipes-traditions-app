@@ -66,6 +66,14 @@ function Profile({ navigation }): JSX.Element {
     })
   }
 
+  const logout = () => {
+    GlobalRecipes.instance.logout().then((result) => {
+      if(result) {
+        navigation.navigate("Login");
+      }
+    });
+  }
+
   return (
     <SafeAreaView style={{height: '100%'}}>
       <View style={{flexDirection: 'row', padding: 15}}>
@@ -82,6 +90,9 @@ function Profile({ navigation }): JSX.Element {
           />
         </View>
       </View>
+      <TouchableOpacity onPress={() => logout()} style={[styles.button,{backgroundColor: '#eb4034', marginLeft: 15, width: Dimensions.get("window").width - 30}]}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity> 
       <View style={{position: 'absolute', bottom: 15, width: Dimensions.get("window").width, flexDirection: 'row', alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
         <TouchableOpacity onPress={() => cancel()} style={styles.button}>
           <Text style={styles.buttonText}>Cancel</Text>

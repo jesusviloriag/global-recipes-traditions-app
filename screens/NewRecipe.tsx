@@ -32,8 +32,8 @@ function NewRecipe({ navigation }): JSX.Element {
 
   const [title, setTitle] = React.useState('');
   const [image, setImage] = React.useState('');
-  const [text, setText] = React.useState('');
-  const [coordinates, setCoordinates] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [city, setCity] = React.useState('');
 
   useEffect(() => {
     GlobalRecipes.init();
@@ -44,11 +44,11 @@ function NewRecipe({ navigation }): JSX.Element {
     })
     .then(location => {
         //console.log(location);
-        setCoordinates("[" + location.latitude + "," + location.longitude + "}")
+        setCity("[" + location.latitude + "," + location.longitude + "}")
         GlobalRecipes.instance.getNearestCities(location.latitude, location.longitude).then((response) => {
           console.log("City: ", response.data[0].name);
           console.log("Amount of Cities: ", response.data.length);
-          setCoordinates(response.data[0].name)
+          setCity(response.data[0].name)
         })
     })
     .catch(error => {
@@ -75,8 +75,8 @@ function NewRecipe({ navigation }): JSX.Element {
     GlobalRecipes.instance.saveRecipe({
       title: title,
       image: image,
-      text: text,
-      city: coordinates
+      description: description,
+      city: city
     });
     navigation.pop();
   }
@@ -94,7 +94,7 @@ function NewRecipe({ navigation }): JSX.Element {
       console.log(result.assets[0].uri);
       TextRecognition.recognize(result.assets[0].uri).then((textResult) => {
         console.log(textResult);
-        setText(textResult.text)
+        setDescription(textResult.text)
       })
     })
   }
@@ -134,11 +134,11 @@ function NewRecipe({ navigation }): JSX.Element {
         <View>
           <TextInput
             editable
-            onChangeText={text => setText(text)}
-            placeholder={"Text"}
+            onChangeText={description => setDescription(description)}
+            placeholder={"Description"}
             multiline
             numberOfLines={8}
-            value={text}
+            value={description}
             style={styles.textField}
           />
           <TouchableOpacity 
@@ -159,9 +159,9 @@ function NewRecipe({ navigation }): JSX.Element {
         <Text style={styles.label}>City</Text>
         <TextInput
           editable={false}
-          onChangeText={text => setCoordinates(text)}
-          placeholder={"Coordinates"}
-          value={coordinates}
+          onChangeText={text => setCity(text)}
+          placeholder={"City"}
+          value={city}
           style={styles.textField}
         />
         <View style={{height: 500}}></View>     

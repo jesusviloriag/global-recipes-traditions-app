@@ -61,7 +61,7 @@ function Home({ navigation }): JSX.Element {
       <FlatList
         style={styles.mainContainer}
         data={recipes}
-        renderItem={({item}) => <Recipe title={item.title} text={item.text} image={item.image} coordinates={item.city}></Recipe>}
+        renderItem={({item}) => <Recipe title={item.title} description={item.description} image={item.image} coordinates={item.city}></Recipe>}
         keyExtractor={item => item.id}
       />
       <TouchableOpacity 

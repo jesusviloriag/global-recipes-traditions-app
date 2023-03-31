@@ -32,12 +32,16 @@ function Profile({ navigation }): JSX.Element {
   const [recipes, setRecipes] = React.useState('');
   const [user, setUser] = React.useState('');
 
-  useEffect(() => {
+  const initializeAll = () => {
     GlobalRecipes.init();
-    GlobalRecipes.instance.getAllRecipes().then((allRecipes) => {
+    setUser(GlobalRecipes.instance.user)
+    GlobalRecipes.instance.getAllUserRecipes(GlobalRecipes.instance.user.id).then((allRecipes) => {
       setRecipes(allRecipes);
     });
-    setUser(GlobalRecipes.instance.user)
+  }
+
+  useEffect(() => {
+    initializeAll()
   }, []);
 
   const createNewRecipe = () => {
@@ -47,11 +51,7 @@ function Profile({ navigation }): JSX.Element {
   React.useEffect(() => {
 
     const focusHandler = navigation.addListener('focus', () => {
-
-      GlobalRecipes.instance.getAllRecipes().then((allRecipes) => {
-        setRecipes(allRecipes);
-      });
-      setUser(GlobalRecipes.instance.user)
+      initializeAll();
     });
 
     return focusHandler;
@@ -59,35 +59,22 @@ function Profile({ navigation }): JSX.Element {
   }, [navigation]);
 
   return (
-    <SafeAreaView>
+    <View style={{height: Dimensions.get('window').height}}>
       <View style={{flexDirection: 'row', padding: 15}}>
         <Image style={{height: 100, width: 100, resizeMode: 'contain', borderRadius: 50}} source={ user.avatar ? { uri: 'data:image/png;base64,' + user.avatar } :require('../assets/user.png')}></Image>
         <View style={{flex: 1, alignContent: 'center', alignItems: 'center', justifyContent: 'center'}}>
-          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 25}}>{user?.username}</Text>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 25}}>{user?.login}</Text>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 25}}>{user?.firstName}</Text>
+          <Text style={{ color: 'black', fontWeight: 'bold', fontSize: 25}}>{user?.lastName}</Text>
         </View>
       </View>
       <FlatList
         style={styles.mainContainer}
         data={recipes}
-        renderItem={({item}) => <Recipe title={item.title} text={item.text} image={item.image} coordinates={item.city}></Recipe>}
+        renderItem={({item}) => <Recipe title={item.title} description={item.description} image={item.image} coordinates={item.city}></Recipe>}
         keyExtractor={item => item.id}
       />
-      <TouchableOpacity 
-        onPress={() => {createNewRecipe()}}
-        style={{
-          position: 'absolute',
-          bottom: 25,
-          right: 15,
-          backgroundColor: '#275a8a',
-          borderRadius: 35,
-          height: 70,
-          width: 70,
-          alignContent: 'center',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}><Text style={{fontSize: 40, color: 'white', fontWeight: 'bold'}}>+</Text></TouchableOpacity>
-
-    </SafeAreaView>
+    </View>
   );
 }
 

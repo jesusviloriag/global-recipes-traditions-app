@@ -28,7 +28,7 @@ import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 import GlobalRecipes from '../components/GlobalRecipes';
 
-function NewRecipe({ title, image, text, coordinates }): JSX.Element {
+function NewRecipe({ title, image, description, coordinates }): JSX.Element {
 
   useEffect(() => {
     GlobalRecipes.init();
@@ -38,7 +38,7 @@ function NewRecipe({ title, image, text, coordinates }): JSX.Element {
     GlobalRecipes.instance.saveRecipe({
       title: title,
       image: image,
-      text: text,
+      description: description,
       city: coordinates
     });
     navigation.pop();
@@ -71,7 +71,7 @@ function NewRecipe({ title, image, text, coordinates }): JSX.Element {
         </View>
         
         <Text style={styles.label}>Ingredients and Preparation</Text>
-        <Text style={styles.preparation}>{text}</Text>
+        <Text style={styles.preparation}>{description}</Text>
         <Text style={styles.label}>City: <Text style={{fontWeight: 'normal'}}>{coordinates}</Text></Text> 
       </ScrollView>
     </View>
